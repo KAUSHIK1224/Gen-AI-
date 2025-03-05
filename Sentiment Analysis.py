@@ -1,32 +1,27 @@
-# -*- coding: utf-8 -*-
-"""Sentiment Analysis.ipynb
-Original file is located at
-    https://colab.research.google.com/drive/13twMOaCHkaj306XryICSELQxw3gauL2K
-"""
-
-
-
-!pip install gradio
 import gradio as gr
 from transformers import pipeline
 
-# Load sentiment analysis model
-classifier = pipeline("sentiment-analysis")
+sentiment_pipeline = pipeline("sentiment-analysis")
 
 def analyze_sentiment(text):
-    result = classifier(text)
-    label = result[0]['label']
-    score = result[0]['score']
-    return f"Sentiment: {label} (Confidence: {score:.2f})"
+    result = sentiment_pipeline(text)[0]
+    return f"Sentiment: {result['label']} (Confidence: {result['score']:.2f})"
 
-# Create Gradio UI
+
+custom_css = """
+#interface-container { background-color: #eef2f3; } 
+#title { color: #1e3a5f; font-size: 24px; } 
+"""
+
+
 iface = gr.Interface(
     fn=analyze_sentiment,
-    inputs=gr.Textbox(lines=2, placeholder="Enter text here..."),
-    outputs="text",
+    inputs=gr.Textbox(label="Enter Text", placeholder="Type your sentence here..."),
+    outputs=gr.Text(label="Sentiment Analysis Result"),
     title="Sentiment Analysis API",
-    description="Enter a sentence, and the model will analyze its sentiment (positive/negative)."
+    description=" Enter a sentence, and the model will predict if it's POSITIVE or NEGATIVE.",
+    theme="compact",
+    css=custom_css
 )
 
-# Run Gradio app
 iface.launch()
